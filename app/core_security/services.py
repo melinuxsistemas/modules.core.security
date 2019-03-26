@@ -57,19 +57,32 @@ class BackupManager:
         return metadata
 
     def restore_backup(self):
-        self.dropbox = dropbox.Dropbox(settings.DROPBOX_OAUTH2_TOKEN)
+        from django.contrib.contenttypes.models import ContentType
+        restore_file = DBBACKUP_STORAGE_OPTIONS['location'] + '/restore.json'
+        try:
+            os.remove(restore_file)
+        except OSError:
+            pass
+        self.dropbox = dropbox.Dropbox(DROPBOX_OAUTH2_TOKEN)
         start_timing_backup = datetime.datetime.now()
-        list_files = self.dropbox.files_list_folder(settings.DROPBOX_ROOT_PATH)
+        list_files = self.dropbox.files_list_folder(DROPBOX_ROOT_PATH)
         #print(list_files.entries[-1].path_display)
         most_recent_backup = self.download(list_files.entries[-1].path_display)
-        print(most_recent_backup)
+        print("Arquivo mais recente: ",list_files.entries[-1].path_display)
         django.setup()
-        #call_command('flush', '--no-input')
-        call_command('dbrestore', '-v','0', '-i', 'temp.dump.gz', '-z', '-q','--noinput')
+        call_command('flush', '--no-input')
+
+        ContentType.objects.all().delete()
+
+        #call_command('dbrestore', '-v','0', '-i', 'temp.dump.gz', '-z', '-q','--noinput')
+        #call_command('dbrestore', '-v', '0', '-i', 'temp.dump.gz', '-z', '--noinput')
         #self.clear_temp_file()
+
+        call_command('loaddata', restore_file)
+
         backup_duration = datetime.datetime.now() - start_timing_backup
         print("Backup Restaurado em", backup_duration.total_seconds(), "segundos")
-        self.clear_temp_file()
+        #self.clear_temp_file()
         return True
 
     def list_backup(self):
@@ -189,6 +202,9 @@ class BackupManager:
 
     def schedule_backup(self):
         print('test')
+
+
+
 
 
 if __name__=='__main__':

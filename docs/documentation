@@ -1,0 +1,18 @@
+Requisitos do módulo de Segurança
+
+Serviços do módulo de Segurança
+- Controle de Versão
+- Controle de Backup
+- Controle de Tempo de Sessão
+
+- O controle de backup ser configurado no settings do projeto onde será utilizado.
+  - O módulo precisa ter uma configuração o padrão de nome dos arquivos de backups.
+  - O módulo precisa ter uma configuração pro padrão de dias de armazenamento dos arquivos local (semanal, quinzenal, mensal, anual ou numero de dias) e remoto.
+  - O módulo precisa ter uma configuração pra indentificar pasta do armazenamento remoto.
+  - O módulo precisa ter uma configuração para identificar pasta do armazenamento local.
+  - O módulo precisa ter uma configuração para email, senha e chave autenticação no serviço remoto.
+
+- O módulo precisa de
+
+- O módulo precisa ter uma identificar a versão atual, data da ultima atualização e permitir a atualização do sistema se disponivel.
+-
