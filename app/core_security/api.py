@@ -1,19 +1,15 @@
 import os
 import datetime
 from django.contrib.auth.decorators import login_required, user_passes_test
-from libs.default.decorators import request_ajax_required
+from otma.apps.core.communications.decorators import request_ajax_required
 from django.db.models import Case, When
 from django.http import Http404
 from django.utils.decorators import method_decorator
-from apps.core.backup.dropboxbackup import BackupManager
-from apps.core.backup.gdrivebackup import GDriveClient
-#from libs.pygit import check_update, update, install
-from apps.core.controller import BaseController
-from apps.core.models import Backup
+from app.core_security.services import GDriveClient
+from otma.apps.core.communications.api import BaseController
+from app.core_security.models import Backup
 from otma.apps.core.authentication.models import User
-from project_ivis import settings
-# from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-# from selenium import webdriver
+from django.conf import settings
 from django.db import models
 
 
@@ -198,9 +194,93 @@ class BackupController(BaseController):
         # print("ESPACO DE ARMAZENAMENTO: ",response_dict)
         return self.response(response_dict)
 
+    '''@request_ajax_required
+    @method_decorator(login_required)
+    def version_update(self, request):
+        self.start_process(request)
+        version_check = check_update()
+        response_dict = {}
+        response_dict['result'] = True
+        response_dict['message'] = ""
+        response_dict['object'] = {}
+        if version_check['local'] != version_check['remote']:
+            response_dict['object']['available_update'] = True
+        else:
+            response_dict['object']['available_update'] = False
+        response_dict['object']['local'] = version_check['local'][0:8]
+        response_dict['object']['remote'] = version_check['remote'][0:8]
+        response_dict['object']['last_update'] = version_check['last_update']
+        # print("VEJA A VERSÃO: ",response_dict)
+        return self.response(response_dict)
+
+    @request_ajax_required
+    @method_decorator(login_required)
+    def update(self, request):
+        self.start_process(request)
+        updating = update()
+        try:
+            install_pack = install()
+            response_dict = {}
+            response_dict['result'] = True
+            response_dict['object'] = None
+            response_dict['message'] = 'Atualização realizada com sucesso.'
+        except Exception as error:
+            response_dict = self.notify.error(error)
+
+        return self.response(response_dict)
+
+    @request_ajax_required
+    @method_decorator(login_required)
+    def shared_folder(self, request):
+        self.start_process(request)
+        backup_link_folder = BackupManager().shared_folder()
+        response_dict = {}
+        response_dict['result'] = True
+        response_dict['message'] = ""
+        response_dict['object'] = backup_link_folder
+        # print("OLHE A LISTA:", backup_link_folder)
+        return self.response(response_dict)'''
+
+    '''def manager_dropbox(self,request):
+        drive = settings.SELENIUM_CHROMEDRIVER
+        binary = FirefoxBinary(settings.MOZILLA_FIREFOX_TEST_PATH)
+        capabilities = webdriver.DesiredCapabilities().FIREFOX
+        capabilities["marionette"] = True
+        admin = settings.ADM_DROPBOX
+        key = settings.KEY_DROPBOX
+        browser = webdriver.Firefox(firefox_binary=binary, executable_path=settings.SELENIUM_GECKODRIVER_MOZILLA,capabilities=capabilities)
+        browser = webdriver.Chrome(executable_path=str(drive))
+        browser.get("https://www.dropbox.com/home/backup")
+        list_of_inputs = browser.find_elements_by_xpath("//div/input[starts-with(@id,'pyxl')]")
+        list_of_inputs[0].send_keys(admin)
+        list_of_inputs[1].send_keys(key)
+        sign_in = browser.find_element_by_class_name("login-button").click()
+        response_dict = {}
+        response_dict['result'] = True
+        response_dict['message'] = ""
+        response_dict['object'] = True
+        return self.response(response_dict)
+    '''
+
     @request_ajax_required
     @method_decorator(login_required)
     def last_backup(self, request, company_repository, project_name):
         x = BaseController().filter(request, model=Backup)
         # print("VEJA O QUE TENHO QUE ENVIAR: ",x)
         return BaseController().filter(request, model=Backup, limit=1)
+
+
+class AbstractAPI:
+
+    def filter_request(request, formulary=None):
+        if request.is_ajax() or settings.DEBUG:
+            if formulary is not None:
+                form = formulary(request.POST)
+                if form.is_valid():
+                    return True, form
+                else:
+                    return False, form
+            else:
+                return True, True
+        else:
+            raise Http404
