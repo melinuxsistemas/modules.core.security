@@ -1,4 +1,4 @@
 include LICENSE
 include README.rst
-recursive-include core_security/docs *
-recursive-include core_security/test *
+#recursive-include core_security/docs *
+#recursive-include core_security/test *

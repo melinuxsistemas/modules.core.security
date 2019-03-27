@@ -1,15 +1,16 @@
+from otma.apps.core.security.enkoder import Encrypter
 from django.core.management import call_command
-from datetime import date
 from django.conf import settings
-from pydrive.auth import GoogleAuth
+
 from pydrive.drive import GoogleDrive
-from app.core_security.enkoder import Encrypter
+from pydrive.auth import GoogleAuth
+
+from datetime import date
 import datetime
 import shutil
 import django
-import sys
-import re
 import os
+
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 

@@ -1,8 +1,9 @@
-from app.core_security.services import GDriveClient
+from otma.apps.core.security.services import GDriveClient
 from django.core.management.base import BaseCommand
 from django.conf import settings
 import django
 import os
+
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings)
 

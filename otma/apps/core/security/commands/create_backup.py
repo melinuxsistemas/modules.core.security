@@ -1,6 +1,6 @@
-from app.core_security.services import GDriveClient
+from otma.apps.core.security.services import GDriveClient
 from django.core.management.base import BaseCommand
-from app.core_security.models import Backup
+from otma.apps.core.security.models import Backup
 import datetime
 
 
